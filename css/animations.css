@@ -1,0 +1,251 @@
+/* ==========================================
+   NASTY — Animation System
+   ========================================== */
+
+/* ---- Intro Sequence ---- */
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 1.2s ease;
+}
+
+.intro-overlay.done { opacity: 0; }
+
+/* Dragon title reveal */
+@keyframes dragonRise {
+  0%   { opacity: 0; transform: translateY(60px) scale(0.9); filter: blur(8px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@keyframes dragonFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  25%  { transform: translateY(-12px) rotate(0.5deg); }
+  75%  { transform: translateY(-6px) rotate(-0.5deg); }
+}
+
+/* Logo shatter-in */
+@keyframes letterShatter {
+  0%   { opacity: 0; transform: translateY(-40px) rotate(-15deg) scale(0.5); filter: blur(6px); }
+  60%  { transform: translateY(4px) rotate(1deg) scale(1.05); filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
+}
+
+.nasty-letter {
+  display: inline-block;
+  animation: letterShatter 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.nasty-letter:nth-child(1) { animation-delay: 0.1s; }
+.nasty-letter:nth-child(2) { animation-delay: 0.2s; }
+.nasty-letter:nth-child(3) { animation-delay: 0.3s; }
+.nasty-letter:nth-child(4) { animation-delay: 0.4s; }
+.nasty-letter:nth-child(5) { animation-delay: 0.5s; }
+
+/* Tagline fade */
+@keyframes taglineFade {
+  0%   { opacity: 0; transform: translateY(20px) letterSpacing(0.05em); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Lotus Bloom ---- */
+@keyframes petalOpen {
+  0%   { transform: rotateX(90deg) scaleY(0.1); opacity: 0; }
+  60%  { transform: rotateX(-8deg) scaleY(1.05); opacity: 1; }
+  100% { transform: rotateX(0deg) scaleY(1); opacity: 1; }
+}
+
+@keyframes petalGlow {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.4) drop-shadow(0 0 8px var(--gold)); }
+}
+
+@keyframes lotusFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(2deg); }
+}
+
+@keyframes lotusReveal {
+  0%   { opacity: 0; transform: scale(0.3) rotate(-180deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* ---- Particle System ---- */
+@keyframes particleRise {
+  0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0.8; }
+  100% { transform: translateY(-120px) translateX(var(--drift, 20px)) scale(0); opacity: 0; }
+}
+
+@keyframes emberPop {
+  0%   { transform: scale(0); opacity: 1; }
+  50%  { transform: scale(1.5); opacity: 0.8; }
+  100% { transform: scale(0); opacity: 0; }
+}
+
+@keyframes sparkle {
+  0%   { transform: scale(0) rotate(0deg); opacity: 0; }
+  50%  { transform: scale(1) rotate(180deg); opacity: 1; }
+  100% { transform: scale(0) rotate(360deg); opacity: 0; }
+}
+
+/* ---- Scroll Reveal ---- */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.reveal-left.visible { opacity: 1; transform: translateX(0); }
+
+.reveal-right {
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.reveal-scale.visible { opacity: 1; transform: scale(1); }
+
+/* Stagger delays */
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+.delay-4 { transition-delay: 0.4s; }
+.delay-5 { transition-delay: 0.5s; }
+.delay-6 { transition-delay: 0.6s; }
+
+/* ---- Gold shimmer effect ---- */
+@keyframes goldShimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    var(--gold-deep) 0%,
+    var(--gold) 20%,
+    var(--gold-shimmer) 50%,
+    var(--gold) 80%,
+    var(--gold-deep) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: goldShimmer 4s linear infinite;
+}
+
+/* ---- Pulse rings ---- */
+@keyframes pulseRing {
+  0%   { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+.pulse-ring {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  animation: pulseRing 2s ease-out infinite;
+}
+
+.pulse-ring:nth-child(2) { animation-delay: 0.5s; }
+.pulse-ring:nth-child(3) { animation-delay: 1s; }
+
+/* ---- Dragon fire breath ---- */
+@keyframes fireBreath {
+  0%   { transform: scaleX(0) scaleY(0.5); opacity: 0; transform-origin: left; }
+  40%  { transform: scaleX(1) scaleY(1); opacity: 1; }
+  100% { transform: scaleX(1.5) scaleY(0.3); opacity: 0; }
+}
+
+/* ---- Product card hover ---- */
+@keyframes cardGlow {
+  0%, 100% { box-shadow: 0 0 0 rgba(201,147,42,0); }
+  50% { box-shadow: 0 0 30px rgba(201,147,42,0.15); }
+}
+
+/* ---- Number counter ---- */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Smoke ---- */
+@keyframes smokeRise {
+  0%   { transform: translateY(0) scale(0.5); opacity: 0.4; }
+  100% { transform: translateY(-200px) scale(3); opacity: 0; }
+}
+
+/* ---- Dragon idle rotation ---- */
+@keyframes idleFloat {
+  0%   { transform: translateY(0px) rotateY(0deg); }
+  25%  { transform: translateY(-15px) rotateY(3deg); }
+  75%  { transform: translateY(-8px) rotateY(-3deg); }
+  100% { transform: translateY(0px) rotateY(0deg); }
+}
+
+/* ---- Chat bubble pop ---- */
+@keyframes chatPop {
+  0%   { transform: scale(0) translateY(10px); opacity: 0; transform-origin: bottom left; }
+  70%  { transform: scale(1.05) translateY(-2px); }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* ---- Typing dots ---- */
+@keyframes typingDot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30%            { transform: translateY(-6px); opacity: 1; }
+}
+
+.typing-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: typingDot 1.2s ease infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* ---- Page transition ---- */
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page-enter { animation: pageIn 0.5s ease forwards; }
+
+/* ---- Spin ---- */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spin { animation: spin 1s linear infinite; }
+
+/* ---- Verification code bounce ---- */
+@keyframes codeBounce {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.08); }
+}

@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="NASTY — The mythic marketplace. AI-powered. Dragon-guarded. Unmatched." />
+  <title>NASTY — Mythic Marketplace</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐉</text></svg>" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/components.css" />
+
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
+
+  <style>
+    /* ---- Hero ---- */
+    .hero {
+      position: relative;
+      height: 100vh;
+      min-height: 700px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    #dragon-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 60% 50%, transparent 30%, var(--obsidian) 75%);
+      z-index: 2;
+    }
+
+    .hero-overlay-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 200px;
+      background: linear-gradient(to top, var(--obsidian), transparent);
+      z-index: 2;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      padding: 0 2rem;
+      max-width: 700px;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--font-heading);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      opacity: 0;
+      animation: taglineFade 0.8s ease 0.3s forwards;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    #hero-logo {
+      font-family: var(--font-display);
+      font-size: clamp(4rem, 12vw, 9rem);
+      font-weight: 900;
+      line-height: 0.9;
+      background: linear-gradient(135deg, var(--gold-deep) 0%, var(--gold) 40%, var(--gold-shimmer) 60%, var(--gold) 80%, var(--gold-deep) 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: goldShimmer 5s linear infinite;
+      margin-bottom: 1.5rem;
+    }
+
+    #hero-tagline {
+      font-family: var(--font-heading);
+      font-size: clamp(0.9rem, 2vw, 1.15rem);
+      font-weight: 400;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      max-width: 500px;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      letter-spacing: 0.04em;
+    }
+
+    #hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      opacity: 0;
+    }
+
+    /* Intro sub text */
+    #intro-sub {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--font-heading);
+      font-size: 13px;
+      letter-spacing: 0.4em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    /* Scroll hint */
+    #scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-heading);
+      font-size: 9px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      animation: taglineFade 0.8s ease forwards;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 50px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollLineAnim 1.5s ease-in-out infinite;
+    }
+
+    @keyframes scrollLineAnim {
+      0%, 100% { opacity: 0.3; transform: scaleY(0.6); }
+      50% { opacity: 1; transform: scaleY(1); }
+    }
+
+    /* Skip btn */
+    #intro-skip {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 9999;
+      padding: 8px 20px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-family: var(--font-heading);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      transition: all 0.2s ease;
+    }
+
+    #intro-skip:hover { border-color: var(--gold); color: var(--gold-bright); }
+
+    /* Dragon load progress */
+    #dragon-load-wrap {
+      position: absolute;
+      bottom: 4rem;
+      right: 2rem;
+      z-index: 4;
+      width: 120px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-end;
+    }
+
+    #dragon-load-label {
+      font-family: var(--font-heading);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    #dragon-load-track {
+      width: 100%;
+      height: 1px;
+      background: var(--obsidian-4);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+
+    #dragon-load-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--gold);
+      transition: width 0.3s ease;
+    }
+
+    /* ============ CATEGORIES ============ */
+    .categories-section { padding: 5rem 0; }
+
+    .categories-scroll {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 1rem;
+      scrollbar-width: none;
+    }
+
+    .categories-scroll::-webkit-scrollbar { display: none; }
+
+    .category-card {
+      flex-shrink: 0;
+      width: 140px;
+      padding: 1.5rem 1rem;
+      background: var(--obsidian-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .category-card:hover {
+      border-color: var(--gold);
+      background: var(--obsidian-4);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(201,147,42,0.1);
+    }
+
+    .category-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .category-name {
+      font-family: var(--font-heading);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .category-count {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ============ FEATURED PRODUCTS ============ */
+    .featured-section { padding: 5rem 0; }
+
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+    }
+
+    /* ============ MARQUEE STRIP ============ */
+    .marquee-strip {
+      overflow: hidden;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 0;
+      background: var(--obsidian-2);
+    }
+
+    .marquee-track {
+      display: flex;
+      gap: 3rem;
+      animation: marqueeScroll 30s linear infinite;
+      width: max-content;
+    }
+
+    @keyframes marqueeScroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    .marquee-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-heading);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .marquee-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+
+    /* ============ STATS SECTION ============ */
+    .stats-section {
+      padding: 5rem 0;
+      text-align: center;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+    }
+
+    .stat-cell {
+      background: var(--obsidian-2);
+      padding: 3rem 2rem;
+      position: relative;
+    }
+
+    .stat-cell::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    /* ============ AI FEATURE SECTION ============ */
+    .ai-section {
+      padding: 5rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ai-section::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(201,147,42,0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .ai-features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .ai-feature-card {
+      padding: 2rem;
+      background: var(--obsidian-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ai-feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .ai-feature-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-4px);
+    }
+
+    .ai-feature-card:hover::before { opacity: 1; }
+
+    .ai-feature-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .ai-feature-title {
+      font-family: var(--font-heading);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .ai-feature-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .ai-badge {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 3px 10px;
+      background: var(--glass-gold);
+      border: 1px solid var(--border-bright);
+      border-radius: 100px;
+      font-family: var(--font-heading);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    /* ============ SELLER CTA ============ */
+    .seller-cta-section {
+      padding: 5rem 0;
+    }
+
+    .seller-cta-inner {
+      background: linear-gradient(135deg, var(--obsidian-3), var(--obsidian-4));
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-xl);
+      padding: 4rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 3rem;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .seller-cta-inner::before {
+      content: '🐉';
+      position: absolute;
+      right: 3rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 8rem;
+      opacity: 0.06;
+      pointer-events: none;
+    }
+
+    /* ============ AI SEARCH BAR in hero ============ */
+    .hero-search {
+      max-width: 500px;
+      margin-top: 2rem;
+    }
+
+    .hero-search-wrap {
+      position: relative;
+    }
+
+    .hero-search-input {
+      width: 100%;
+      padding: 16px 60px 16px 24px;
+      background: rgba(10, 10, 15, 0.8);
+      border: 1px solid var(--border-bright);
+      border-radius: 100px;
+      color: var(--text-primary);
+      font-size: 14px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .hero-search-input::placeholder { color: var(--text-muted); }
+    .hero-search-input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,147,42,0.1), 0 4px 20px rgba(0,0,0,0.4);
+      outline: none;
+    }
+
+    .hero-search-btn {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--gold-deep), var(--gold));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--obsidian);
+      font-size: 1.1rem;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .hero-search-btn:hover {
+      background: linear-gradient(135deg, var(--gold), var(--gold-shimmer));
+      transform: translateY(-50%) scale(1.05);
+    }
+
+    .search-ai-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 10px;
+      padding-left: 24px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .search-ai-hint i { color: var(--gold); font-size: 12px; }
+
+    /* ============ RESPONSIVE ============ */
+    @media (max-width: 900px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .ai-features-grid { grid-template-columns: 1fr 1fr; }
+      .seller-cta-inner { grid-template-columns: 1fr; text-align: center; }
+    }
+
+    @media (max-width: 600px) {
+      .hero-content { max-width: 100%; }
+      .ai-features-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      #hero-logo { font-size: clamp(3.5rem, 18vw, 5rem); }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Custom cursor -->
+  <div class="cursor"></div>
+  <div class="cursor-ring"></div>
+
+  <!-- Loading screen -->
+  <div id="loading-screen">
+    <div class="loading-logo">NASTY</div>
+    <div class="loading-bar-wrap">
+      <div class="loading-bar"></div>
+    </div>
+    <div class="loading-text">Awakening the dragon...</div>
+  </div>
+
+  <!-- Skip intro -->
+  <button id="intro-skip">Skip Intro</button>
+
+  <!-- ============ NAVBAR ============ -->
+  <nav class="navbar" id="navbar">
+    <div class="container navbar-inner">
+      <a href="/" class="navbar-logo">NASTY</a>
+
+      <ul class="navbar-nav" id="nav-links">
+        <li><a href="pages/shop.html">Shop</a></li>
+        <li><a href="pages/seller.html">Sell</a></li>
+        <li><a href="#categories">Categories</a></li>
+        <li><a href="#about">About</a></li>
+      </ul>
+
+      <div class="navbar-actions" id="nav-actions">
+        <!-- AI Search trigger -->
+        <button class="nav-icon-btn" id="nav-search-btn" title="AI Search" data-cursor="hover">
+          <i class="ti ti-search"></i>
+        </button>
+
+        <!-- Wishlist -->
+        <a href="pages/account.html#wishlist" class="nav-icon-btn" title="Wishlist" data-cursor="hover">
+          <i class="ti ti-heart"></i>
+        </a>
+
+        <!-- Cart -->
+        <a href="pages/cart.html" class="nav-icon-btn" title="Cart" id="nav-cart-btn" data-cursor="hover">
+          <i class="ti ti-shopping-bag"></i>
+          <span class="nav-badge" id="cart-badge" style="display:none">0</span>
+        </a>
+
+        <!-- Login / User -->
+        <button class="btn-outline" id="nav-login-btn" onclick="openAuthModal('login')"
+          style="padding: 9px 20px; font-size: 11px;">
+          Sign In
+        </button>
+
+        <button class="nav-icon-btn hidden" id="nav-user-btn" title="Account" data-cursor="hover"
+          onclick="window.location.href='pages/account.html'">
+          <span id="nav-user-avatar" style="font-family:var(--font-heading);font-size:13px;font-weight:700;color:var(--gold)"></span>
+        </button>
+      </div>
+
+      <!-- Hamburger -->
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="home">
+    <canvas id="dragon-canvas"></canvas>
+    <div class="hero-overlay"></div>
+    <div class="hero-overlay-bottom"></div>
+
+    <!-- Dragon loading indicator -->
+    <div id="dragon-load-wrap">
+      <span id="dragon-load-label">Loading Dragon</span>
+      <div id="dragon-load-track">
+        <div id="dragon-load-bar"></div>
+      </div>
+    </div>
+
+    <!-- Cinematic sub text -->
+    <div id="intro-sub"></div>
+
+    <div class="container hero-content">
+      <div class="hero-eyebrow">Mythic · AI-Powered · Unlimited</div>
+
+      <div id="hero-logo">NASTY</div>
+
+      <p id="hero-tagline">
+        Where ancient power meets modern commerce.<br />
+        Shop everything. Sell anything. Guided by dragon fire.
+      </p>
+
+      <div id="hero-cta">
+        <a href="pages/shop.html" class="btn-primary">
+          <span>⚔ Explore the Market</span>
+        </a>
+        <a href="pages/seller.html" class="btn-outline">
+          <span>🐉 Become a Seller</span>
+        </a>
+      </div>
+
+      <!-- AI Search in hero -->
+      <div class="hero-search" id="hero-cta" style="opacity:0">
+        <div class="hero-search-wrap">
+          <input
+            type="text"
+            id="hero-search-input"
+            class="hero-search-input"
+            placeholder="Ask anything — &quot;find me a dark leather jacket under $200&quot;"
+            autocomplete="off"
+          />
+          <button class="hero-search-btn" id="hero-search-btn">
+            <i class="ti ti-sparkles"></i>
+          </button>
+        </div>
+        <div class="search-ai-hint">
+          <i class="ti ti-robot"></i>
+          <span>AI understands natural language · Powered by Llama 3.3</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll hint -->
+    <div id="scroll-hint" class="hidden">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ============ MARQUEE ============ -->
+  <div class="marquee-strip">
+    <div class="marquee-track" id="marquee-track">
+      <!-- Duplicated for seamless loop -->
+    </div>
+  </div>
+
+  <!-- ============ CATEGORIES ============ -->
+  <section class="categories-section section" id="categories">
+    <div class="container">
+      <div class="text-center reveal" style="margin-bottom:3rem">
+        <div class="section-eyebrow">Explore</div>
+        <h2 class="section-title">Every realm, every desire</h2>
+        <div class="divider-gold"></div>
+      </div>
+      <div class="categories-scroll" id="categories-grid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURED PRODUCTS ============ -->
+  <section class="featured-section section" id="featured">
+    <div class="container">
+      <div class="section-header reveal">
+        <div>
+          <div class="section-eyebrow">Featured</div>
+          <h2 class="section-title">Chosen by the dragon</h2>
+        </div>
+        <a href="pages/shop.html" class="btn-ghost">View all <i class="ti ti-arrow-right"></i></a>
+      </div>
+      <div class="products-grid" id="featured-products">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STATS ============ -->
+  <section class="stats-section section" id="about">
+    <div class="container">
+      <div class="reveal" style="margin-bottom:3rem">
+        <div class="section-eyebrow text-center">By the numbers</div>
+        <h2 class="section-title text-center">Power in every metric</h2>
+        <div class="divider-gold"></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-cell reveal delay-1">
+          <div class="stat-number" data-count="120000">0</div>
+          <div class="stat-label">Products Listed</div>
+        </div>
+        <div class="stat-cell reveal delay-2">
+          <div class="stat-number" data-count="8500">0</div>
+          <div class="stat-label">Active Sellers</div>
+        </div>
+        <div class="stat-cell reveal delay-3">
+          <div class="stat-number" data-count="420000">0</div>
+          <div class="stat-label">Happy Buyers</div>
+        </div>
+        <div class="stat-cell reveal delay-4">
+          <div class="stat-number" data-count="99">0</div>
+          <div class="stat-label">% Uptime</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ AI FEATURES ============ -->
+  <section class="ai-section section">
+    <div class="container">
+      <div class="text-center reveal">
+        <div class="section-eyebrow">Intelligence</div>
+        <h2 class="section-title">AI lives everywhere</h2>
+        <div class="divider-gold"></div>
+        <p class="section-subtitle" style="margin: 1rem auto 0">
+          From the dragon that answers your questions to the engine that recommends your next obsession — AI is woven into every pixel.
+        </p>
+      </div>
+      <div class="ai-features-grid">
+        <div class="ai-feature-card reveal delay-1">
+          <span class="ai-feature-icon">🐉</span>
+          <div class="ai-feature-title">Dragon Chat</div>
+          <p class="ai-feature-desc">Talk to the dragon. Ask anything — find products, get help, discover hidden gems. Powered by Llama 3.3 70B.</p>
+          <span class="ai-badge">Groq · Llama 3.3</span>
+        </div>
+        <div class="ai-feature-card reveal delay-2">
+          <span class="ai-feature-icon">🔮</span>
+          <div class="ai-feature-title">Intent Search</div>
+          <p class="ai-feature-desc">Search like a human. "Something warm for winter under $50" — our AI understands what you actually mean.</p>
+          <span class="ai-badge">Groq · NLU</span>
+        </div>
+        <div class="ai-feature-card reveal delay-3">
+          <span class="ai-feature-icon">✨</span>
+          <div class="ai-feature-title">Smart Recommendations</div>
+          <p class="ai-feature-desc">Your feed evolves with you. The more you explore, the sharper the intelligence becomes.</p>
+          <span class="ai-badge">Groq · Personalization</span>
+        </div>
+        <div class="ai-feature-card reveal delay-4">
+          <span class="ai-feature-icon">📸</span>
+          <div class="ai-feature-title">Vision Tagging</div>
+          <p class="ai-feature-desc">Upload a product image — our AI auto-classifies it, writes tags, and places it in the right category.</p>
+          <span class="ai-badge">HuggingFace · ViT</span>
+        </div>
+        <div class="ai-feature-card reveal delay-5">
+          <span class="ai-feature-icon">✍️</span>
+          <div class="ai-feature-title">Listing Writer</div>
+          <p class="ai-feature-desc">Sellers type a few words. AI writes the full title, description, and tags — professional grade in seconds.</p>
+          <span class="ai-badge">Groq · Copywriting</span>
+        </div>
+        <div class="ai-feature-card reveal delay-6">
+          <span class="ai-feature-icon">📊</span>
+          <div class="ai-feature-title">Admin Insights</div>
+          <p class="ai-feature-desc">Platform intelligence that flags trends, anomalies, and opportunities. No spreadsheets needed.</p>
+          <span class="ai-badge">Groq · Analytics</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SELLER CTA ============ -->
+  <section class="seller-cta-section section">
+    <div class="container">
+      <div class="seller-cta-inner reveal">
+        <div>
+          <div class="section-eyebrow">Sell on NASTY</div>
+          <h2 class="section-title" style="font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 1rem;">
+            Your products deserve<br />a mythic stage
+          </h2>
+          <p style="color: var(--text-secondary); font-size: 15px; max-width: 480px; line-height: 1.7; margin-bottom: 2rem;">
+            Join thousands of sellers. AI writes your listings, tags your images, and surfaces your products to buyers who want them.
+          </p>
+          <a href="pages/seller.html" class="btn-primary">
+            <span>⚔ Start Selling Free</span>
+          </a>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-family: var(--font-display); font-size: 5rem; opacity: 0.15; line-height: 1">🐉</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer" id="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-logo">NASTY</div>
+          <p style="font-size: 13px; color: var(--text-secondary); max-width: 300px; line-height: 1.7; margin-bottom: 1.5rem;">
+            The world's most immersive marketplace. Ancient power, modern commerce.
+          </p>
+          <div style="display: flex; gap: 10px;">
+            <a href="#" class="nav-icon-btn" style="width:36px;height:36px;font-size:0.9rem"><i class="ti ti-brand-twitter"></i></a>
+            <a href="#" class="nav-icon-btn" style="width:36px;height:36px;font-size:0.9rem"><i class="ti ti-brand-instagram"></i></a>
+            <a href="#" class="nav-icon-btn" style="width:36px;height:36px;font-size:0.9rem"><i class="ti ti-brand-discord"></i></a>
+          </div>
+        </div>
+        <div>
+          <div class="footer-heading">Marketplace</div>
+          <ul class="footer-links">
+            <li><a href="pages/shop.html">Browse All</a></li>
+            <li><a href="pages/shop.html?sort=newest">New Arrivals</a></li>
+            <li><a href="pages/shop.html?sort=rating">Top Rated</a></li>
+            <li><a href="pages/shop.html?sale=true">On Sale</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-heading">Sellers</div>
+          <ul class="footer-links">
+            <li><a href="pages/seller.html">Seller Portal</a></li>
+            <li><a href="pages/seller.html#start">Start Selling</a></li>
+            <li><a href="#">Seller Docs</a></li>
+            <li><a href="#">Fees & Pricing</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-heading">Help</div>
+          <ul class="footer-links">
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Use</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 NASTY Marketplace. All rights reserved.</span>
+        <span style="color: var(--text-muted); font-size: 11px; letter-spacing: 0.1em;">
+          Dragon model: NORBERTO-3D via Sketchfab (CC BY)
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ AUTH MODAL ============ -->
+  <div class="modal-overlay" id="auth-modal-overlay" onclick="closeAuthModal(event)">
+    <div class="auth-modal" onclick="event.stopPropagation()">
+      <div class="auth-modal-header">
+        <div class="auth-modal-logo">NASTY</div>
+        <h2 id="auth-modal-title">Welcome Back</h2>
+        <p id="auth-modal-subtitle">Sign in to continue your journey</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Create Account</button>
+      </div>
+
+      <div class="auth-body">
+
+        <!-- LOGIN STEP -->
+        <div class="auth-step active" id="step-login">
+          <form class="auth-form" onsubmit="handleLogin(event)">
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-input" id="login-email" placeholder="you@example.com" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <div class="password-wrap">
+                <input type="password" class="form-input" id="login-password" placeholder="Your password" required />
+                <span class="toggle-password" onclick="togglePassword('login-password', this)">
+                  <i class="ti ti-eye"></i>
+                </span>
+              </div>
+            </div>
+            <div id="login-error" class="form-error"></div>
+            <button type="submit" class="btn-primary" style="width:100%; justify-content:center" id="login-btn">
+              <span>Sign In</span>
+            </button>
+            <div class="auth-divider"><span>or</span></div>
+            <button type="button" class="btn-outline" style="width:100%;justify-content:center;gap:10px" onclick="handleGoogleAuth()">
+              <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+              Continue with Google
+            </button>
+            <div style="text-align:center">
+              <button type="button" class="btn-ghost" onclick="showForgotPassword()" style="font-size:12px">
+                Forgot password?
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- SIGNUP STEP -->
+        <div class="auth-step" id="step-signup">
+          <form class="auth-form" onsubmit="handleSignup(event)">
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-input" id="signup-name" placeholder="Your name" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-input" id="signup-email" placeholder="you@example.com" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <div class="password-wrap">
+                <input type="password" class="form-input" id="signup-password" placeholder="Min 6 characters" required />
+                <span class="toggle-password" onclick="togglePassword('signup-password', this)">
+                  <i class="ti ti-eye"></i>
+                </span>
+              </div>
+              <span class="form-hint">Use at least 6 characters with a number.</span>
+            </div>
+            <div id="signup-error" class="form-error"></div>
+            <button type="submit" class="btn-primary" style="width:100%; justify-content:center" id="signup-btn">
+              <span>Create Account</span>
+            </button>
+            <div class="auth-divider"><span>or</span></div>
+            <button type="button" class="btn-outline" style="width:100%;justify-content:center;gap:10px" onclick="handleGoogleAuth()">
+              <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+              Sign up with Google
+            </button>
+          </form>
+        </div>
+
+        <!-- EMAIL VERIFICATION STEP -->
+        <div class="auth-step" id="step-verify">
+          <div style="text-align:center">
+            <div class="verification-icon">📧</div>
+            <h3 style="font-family:var(--font-heading);font-size:1.1rem;margin-bottom:8px">Verify your email</h3>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:2rem;line-height:1.6">
+              We sent a verification link to<br />
+              <strong id="verify-email-display" style="color:var(--gold-bright)"></strong>
+            </p>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:1.5rem">
+              Click the link in the email to verify your account, then come back and sign in.
+            </p>
+            <button class="btn-primary" style="width:100%;justify-content:center;margin-bottom:1rem" onclick="switchAuthTab('login')">
+              <span>Go to Sign In</span>
+            </button>
+            <div class="resend-btn">
+              Didn't receive it? <span id="resend-link" onclick="handleResendVerification()">Resend email</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- FORGOT PASSWORD STEP -->
+        <div class="auth-step" id="step-forgot">
+          <div style="text-align:center;margin-bottom:1.5rem">
+            <div class="verification-icon" style="background:linear-gradient(135deg,var(--emerald),var(--emerald-bright))">🔑</div>
+            <h3 style="font-family:var(--font-heading);font-size:1.1rem;margin-bottom:8px">Reset password</h3>
+            <p style="font-size:13px;color:var(--text-secondary)">We'll send a reset link to your email</p>
+          </div>
+          <form class="auth-form" onsubmit="handleForgotPassword(event)">
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-input" id="forgot-email" placeholder="you@example.com" required />
+            </div>
+            <div id="forgot-error" class="form-error"></div>
+            <button type="submit" class="btn-primary" style="width:100%;justify-content:center">
+              <span>Send Reset Link</span>
+            </button>
+            <button type="button" class="btn-ghost" onclick="showStep('step-login')" style="width:100%;justify-content:center">
+              ← Back to Sign In
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DRAGON CHAT ============ -->
+  <div class="dragon-chat" id="dragon-chat">
+    <div class="dragon-chat-window hidden" id="chat-window">
+      <div class="chat-header">
+        <div class="chat-header-avatar">🐉</div>
+        <div class="chat-header-info">
+          <h4>NAST — Dragon AI</h4>
+          <p>● Online · Powered by Llama 3.3</p>
+        </div>
+        <button onclick="toggleChat()" style="margin-left:auto;color:var(--text-muted);font-size:1.2rem">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+      <div class="chat-messages" id="chat-messages">
+        <div class="message ai">
+          Greetings. I am NAST, the ancient guardian of this marketplace. 🔥<br />
+          Ask me anything — products, help, or the secrets of this realm.
+        </div>
+      </div>
+      <div class="chat-input-wrap">
+        <input type="text" class="chat-input" id="chat-input" placeholder="Ask the dragon..." onkeydown="handleChatKey(event)" />
+        <button class="chat-send-btn" onclick="sendChatMessage()">
+          <i class="ti ti-send"></i>
+        </button>
+      </div>
+    </div>
+    <button class="dragon-chat-btn" onclick="toggleChat()" title="Talk to the Dragon AI">
+      🐉
+    </button>
+  </div>
+
+  <!-- ============ TOAST ============ -->
+  <div class="toast-container"></div>
+
+  <!-- ============ JS ============ -->
+  <script type="module">
+    import { initDragonScene, playDragonEntrance } from './js/scene/dragonScene.js';
+    import { createLotus, updateLotus } from './js/scene/lotus.js';
+    import { createEmberSystem, createGoldDust, createSmokeSystem } from './js/scene/particles.js';
+    import { initIntroSequence } from './js/scene/intro.js';
+    import { initCursor, initNavbar, initScrollReveal, hideLoadingScreen, cart, animateCounter, showToast } from './js/core/utils.js';
+    import { onAuthChange } from './js/core/auth.js';
+    import { dragonChat } from './js/ai/groq.js';
+    import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
+
+    // ---- Init ----
+    initCursor();
+    initNavbar();
+    cart.updateBadge();
+    hideLoadingScreen();
+
+    // ---- Init 3D scene ----
+    initDragonScene('dragon-canvas');
+
+    // ---- Init intro sequence ----
+    // We need scene access — for lotus we'll add it via a global event
+    window.addEventListener('nasty:introDone', () => {
+      initScrollReveal();
+      startCounters();
+    });
+
+    // ---- Add Three.js lotus to the existing scene ----
+    // dragonScene exposes scene via event after init
+    // Simple approach: init lotus after short delay
+    setTimeout(() => {
+      // The scene is internal to dragonScene.js; lotus will be added by intro.js
+      // For now we trigger the intro
+    }, 100);
+
+    // ---- Hamburger ----
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('nav-links');
+    hamburger?.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      navLinks.classList.toggle('open');
+    });
+
+    // ---- Marquee ----
+    const items = [
+      '⚔ New Arrivals', '🔥 Top Deals', '🐉 AI-Powered', '✨ Premium Sellers',
+      '🌿 All Categories', '💎 Luxury Goods', '🎯 Flash Sales', '🛡 Buyer Protection'
+    ];
+    const track = document.getElementById('marquee-track');
+    if (track) {
+      const doubled = [...items, ...items];
+      track.innerHTML = doubled.map(item => `
+        <div class="marquee-item">
+          <div class="marquee-dot"></div>
+          ${item}
+        </div>
+      `).join('');
+    }
+
+    // ---- Categories ----
+    const CATEGORIES = [
+      { icon: '📱', name: 'Electronics', count: '12K+' },
+      { icon: '👗', name: 'Fashion', count: '34K+' },
+      { icon: '💄', name: 'Beauty', count: '8K+' },
+      { icon: '🏠', name: 'Home', count: '15K+' },
+      { icon: '⚽', name: 'Sports', count: '6K+' },
+      { icon: '📚', name: 'Books', count: '22K+' },
+      { icon: '🧸', name: 'Toys', count: '5K+' },
+      { icon: '🍕', name: 'Food', count: '3K+' },
+      { icon: '🚗', name: 'Automotive', count: '9K+' },
+      { icon: '🎮', name: 'Gaming', count: '7K+' },
+    ];
+
+    const catGrid = document.getElementById('categories-grid');
+    if (catGrid) {
+      catGrid.innerHTML = CATEGORIES.map(c => `
+        <div class="category-card" onclick="window.location.href='pages/shop.html?cat=${c.name}'">
+          <span class="category-icon">${c.icon}</span>
+          <div class="category-name">${c.name}</div>
+          <div class="category-count">${c.count} items</div>
+        </div>
+      `).join('');
+    }
+
+    // ---- Featured products (placeholder data) ----
+    const SAMPLE_PRODUCTS = [
+      { id: '1', title: 'Obsidian Leather Jacket', price: 189, category: 'Fashion', rating: 4.8, reviews: 124, image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400', badge: 'HOT' },
+      { id: '2', title: 'Dragon Edition Headphones', price: 249, originalPrice: 320, category: 'Electronics', rating: 4.9, reviews: 89, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400', badge: 'SALE' },
+      { id: '3', title: 'Gold Aura Perfume Set', price: 95, category: 'Beauty', rating: 4.7, reviews: 203, image: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=400', badge: 'NEW' },
+      { id: '4', title: 'Ember Stone Ring', price: 340, category: 'Fashion', rating: 5.0, reviews: 56, image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400', badge: null },
+      { id: '5', title: 'Mystic Desk Lamp', price: 78, category: 'Home', rating: 4.6, reviews: 312, image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400', badge: null },
+      { id: '6', title: 'Ancient Script Notebook', price: 29, category: 'Books', rating: 4.8, reviews: 445, image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400', badge: 'NEW' },
+      { id: '7', title: 'Void Gaming Chair', price: 520, originalPrice: 680, category: 'Gaming', rating: 4.9, reviews: 78, image: 'https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=400', badge: 'SALE' },
+      { id: '8', title: 'Lotus Aromatherapy Kit', price: 54, category: 'Beauty', rating: 4.7, reviews: 189, image: 'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=400', badge: null },
+    ];
+
+    const prodGrid = document.getElementById('featured-products');
+    if (prodGrid) {
+      prodGrid.innerHTML = SAMPLE_PRODUCTS.map(p => `
+        <div class="product-card reveal" onclick="window.location.href='pages/product.html?id=${p.id}'">
+          <div class="product-card-image">
+            <img src="${p.image}" alt="${p.title}" loading="lazy" />
+            ${p.badge ? `<span class="product-card-badge ${p.badge === 'NEW' ? 'new' : p.badge === 'SALE' ? 'sale' : ''}">${p.badge}</span>` : ''}
+            <div class="product-card-actions">
+              <button class="card-action-btn" onclick="event.stopPropagation(); toggleWishlist('${p.id}', this)" title="Wishlist">
+                <i class="ti ti-heart"></i>
+              </button>
+              <button class="card-action-btn" onclick="event.stopPropagation(); quickAddToCart(${JSON.stringify(p).replace(/"/g, '&quot;')})" title="Add to cart">
+                <i class="ti ti-shopping-bag-plus"></i>
+              </button>
+            </div>
+          </div>
+          <div class="product-card-body">
+            <div class="product-card-category">${p.category}</div>
+            <div class="product-card-title">${p.title}</div>
+            <div class="product-card-price">
+              <span class="price-current">$${p.price}</span>
+              ${p.originalPrice ? `<span class="price-original">$${p.originalPrice}</span>` : ''}
+            </div>
+            <div class="product-card-rating">
+              <span class="stars">${'★'.repeat(Math.floor(p.rating))}${'☆'.repeat(5 - Math.floor(p.rating))}</span>
+              <span>${p.rating} (${p.reviews})</span>
+            </div>
+          </div>
+          <div class="product-card-footer">
+            <button class="add-to-cart-btn" onclick="event.stopPropagation(); quickAddToCart(${JSON.stringify(p).replace(/"/g, '&quot;')})">
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      initScrollReveal();
+    }
+
+    // ---- Stat counters ----
+    function startCounters() {
+      document.querySelectorAll('[data-count]').forEach(el => {
+        const target = parseInt(el.dataset.count);
+        const observer = new IntersectionObserver(([entry]) => {
+          if (entry.isIntersecting) {
+            animateCounter(el, target);
+            observer.unobserve(el);
+          }
+        });
+        observer.observe(el);
+      });
+    }
+
+    // ---- Cart actions ----
+    window.quickAddToCart = (product) => {
+      cart.add(product);
+    };
+
+    window.toggleWishlist = (id, btn) => {
+      btn.classList.toggle('active');
+      showToast(btn.classList.contains('active') ? 'Added to wishlist ♥' : 'Removed from wishlist', 'info');
+    };
+
+    // ---- Hero search ----
+    const heroSearchBtn = document.getElementById('hero-search-btn');
+    const heroSearchInput = document.getElementById('hero-search-input');
+
+    async function handleHeroSearch() {
+      const query = heroSearchInput?.value.trim();
+      if (!query) return;
+      window.location.href = `pages/shop.html?q=${encodeURIComponent(query)}`;
+    }
+
+    heroSearchBtn?.addEventListener('click', handleHeroSearch);
+    heroSearchInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleHeroSearch(); });
+
+    // ---- Dragon chat ----
+    const chatHistory = [];
+
+    window.toggleChat = () => {
+      const win = document.getElementById('chat-window');
+      win?.classList.toggle('hidden');
+    };
+
+    window.handleChatKey = (e) => {
+      if (e.key === 'Enter') sendChatMessage();
+    };
+
+    window.sendChatMessage = async () => {
+      const input = document.getElementById('chat-input');
+      const messages = document.getElementById('chat-messages');
+      const text = input?.value.trim();
+      if (!text || !messages) return;
+
+      // Add user message
+      messages.innerHTML += `<div class="message user">${text}</div>`;
+      input.value = '';
+      messages.scrollTop = messages.scrollHeight;
+
+      // Typing indicator
+      const typingId = 'typing-' + Date.now();
+      messages.innerHTML += `
+        <div class="typing-indicator" id="${typingId}">
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+        </div>`;
+      messages.scrollTop = messages.scrollHeight;
+
+      chatHistory.push({ role: 'user', content: text });
+
+      const result = await dragonChat(chatHistory);
+      document.getElementById(typingId)?.remove();
+
+      const reply = result.success ? result.content : "The flames flicker... I cannot respond right now. Try again soon.";
+      chatHistory.push({ role: 'assistant', content: reply });
+
+      messages.innerHTML += `<div class="message ai">${reply}</div>`;
+      messages.scrollTop = messages.scrollHeight;
+    };
+
+    // ---- Auth listeners ----
+    onAuthChange((user) => {
+      if (user) closeAuthModal();
+    });
+  </script>
+
+  <!-- Auth functions (non-module for onclick handlers) -->
+  <script>
+    // ---- Auth modal ----
+    function openAuthModal(tab = 'login') {
+      document.getElementById('auth-modal-overlay').classList.add('active');
+      switchAuthTab(tab);
+    }
+
+    function closeAuthModal(event) {
+      if (!event || event.target === document.getElementById('auth-modal-overlay')) {
+        document.getElementById('auth-modal-overlay').classList.remove('active');
+      }
+    }
+
+    function switchAuthTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      if (tab === 'login') {
+        document.getElementById('tab-login')?.classList.add('active');
+        showStep('step-login');
+        document.getElementById('auth-modal-title').textContent = 'Welcome Back';
+        document.getElementById('auth-modal-subtitle').textContent = 'Sign in to continue your journey';
+      } else {
+        document.getElementById('tab-signup')?.classList.add('active');
+        showStep('step-signup');
+        document.getElementById('auth-modal-title').textContent = 'Join NASTY';
+        document.getElementById('auth-modal-subtitle').textContent = 'Create your account — it\'s free';
+      }
+    }
+
+    function showStep(stepId) {
+      document.querySelectorAll('.auth-step').forEach(s => s.classList.remove('active'));
+      document.getElementById(stepId)?.classList.add('active');
+    }
+
+    function togglePassword(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      const isText = input.type === 'text';
+      input.type = isText ? 'password' : 'text';
+      btn.innerHTML = `<i class="ti ti-eye${isText ? '' : '-off'}"></i>`;
+    }
+
+    function showForgotPassword() { showStep('step-forgot'); }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const btn = document.getElementById('login-btn');
+      const errEl = document.getElementById('login-error');
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+
+      btn.innerHTML = '<span class="spin">↻</span>';
+      btn.disabled = true;
+      errEl.classList.remove('show');
+
+      const { signIn } = await import('./js/core/auth.js');
+      const result = await signIn(email, password);
+
+      btn.innerHTML = '<span>Sign In</span>';
+      btn.disabled = false;
+
+      if (result.success) {
+        showToastGlobal('Welcome back! 🔥', 'success');
+        closeAuthModal();
+      } else if (result.needsVerification) {
+        document.getElementById('verify-email-display').textContent = email;
+        showStep('step-verify');
+      } else {
+        errEl.textContent = result.error;
+        errEl.classList.add('show');
+      }
+    }
+
+    async function handleSignup(e) {
+      e.preventDefault();
+      const btn = document.getElementById('signup-btn');
+      const errEl = document.getElementById('signup-error');
+      const name = document.getElementById('signup-name').value;
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+
+      btn.innerHTML = '<span class="spin">↻</span>';
+      btn.disabled = true;
+      errEl.classList.remove('show');
+
+      const { signUp } = await import('./js/core/auth.js');
+      const result = await signUp(name, email, password);
+
+      btn.innerHTML = '<span>Create Account</span>';
+      btn.disabled = false;
+
+      if (result.success) {
+        document.getElementById('verify-email-display').textContent = email;
+        showStep('step-verify');
+      } else {
+        errEl.textContent = result.error;
+        errEl.classList.add('show');
+      }
+    }
+
+    async function handleGoogleAuth() {
+      const { signInWithGoogle } = await import('./js/core/auth.js');
+      const result = await signInWithGoogle();
+      if (result.success) {
+        showToastGlobal('Signed in with Google! 🔥', 'success');
+        closeAuthModal();
+      } else {
+        showToastGlobal(result.error, 'error');
+      }
+    }
+
+    async function handleResendVerification() {
+      const email = document.getElementById('verify-email-display').textContent;
+      const password = document.getElementById('signup-password')?.value || document.getElementById('login-password')?.value;
+      const { resendVerification } = await import('./js/core/auth.js');
+      const result = await resendVerification(email, password);
+      showToastGlobal(result.success ? 'Verification email sent!' : result.error, result.success ? 'success' : 'error');
+    }
+
+    async function handleForgotPassword(e) {
+      e.preventDefault();
+      const email = document.getElementById('forgot-email').value;
+      const { resetPassword } = await import('./js/core/auth.js');
+      const result = await resetPassword(email);
+      if (result.success) {
+        showToastGlobal('Reset link sent! Check your inbox.', 'success');
+        showStep('step-login');
+      } else {
+        const errEl = document.getElementById('forgot-error');
+        errEl.textContent = result.error;
+        errEl.classList.add('show');
+      }
+    }
+
+    // Global toast (non-module)
+    function showToastGlobal(message, type = 'info') {
+      let container = document.querySelector('.toast-container');
+      if (!container) { container = document.createElement('div'); container.className = 'toast-container'; document.body.appendChild(container); }
+      const icons = { success: '✦', error: '✕', info: '◆' };
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `<span style="color:var(--gold)">${icons[type]||'◆'}</span> ${message}`;
+      container.appendChild(toast);
+      setTimeout(() => { toast.style.animation = 'toastOut 0.3s ease forwards'; setTimeout(() => toast.remove(), 300); }, 3500);
+    }
+
+    // Keyboard close
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeAuthModal();
+    });
+  </script>
+</body>
+</html>
